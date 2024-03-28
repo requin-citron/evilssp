@@ -2,10 +2,10 @@
 #define _DNS_H
 
 #include <stdio.h>
-#include <windows.h>
-#include <windns.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include <windows.h>
+#include <windns.h>
 #include "utils.h"
 #include "ssp.h"
 

